@@ -1,11 +1,21 @@
+import { useMutation, useQueryClient } from 'react-query';
+import { addAnecdote } from '../requests';
+
+const generateId = () => (Math.random() * 1000000).toFixed(0);
+
 const AnecdoteForm = () => {
 
+  const queryClient = useQueryClient();
+  const newAnecdoteMutation = useMutation(addAnecdote, {
+    onSuccess: () => queryClient.invalidateQueries('anecdotes')
+  });
+
   const onCreate = (event) => {
-    event.preventDefault()
-    const content = event.target.anecdote.value
-    event.target.anecdote.value = ''
-    console.log('new anecdote')
-}
+    event.preventDefault();
+    const content = event.target.anecdote.value;
+    newAnecdoteMutation.mutate({ content, votes: 0, id: generateId() });
+    event.target.anecdote.value = '';
+  };
 
   return (
     <div>
@@ -15,7 +25,7 @@ const AnecdoteForm = () => {
         <button type="submit">create</button>
       </form>
     </div>
-  )
-}
+  );
+};
 
-export default AnecdoteForm
+export default AnecdoteForm;
