@@ -1,27 +1,35 @@
-import AnecdoteForm from './components/AnecdoteForm'
-import Notification from './components/Notification'
+import AnecdoteForm from './components/AnecdoteForm';
+import Notification from './components/Notification';
+import { getAnecdotes } from './requests';
+import { useQuery } from 'react-query';
 
 const App = () => {
 
-  const handleVote = (anecdote) => {
-    console.log('vote')
-  }
+  const anecdoteFetchResult = useQuery('anecdotes', getAnecdotes);
 
-  const anecdotes = [
-    {
-      "content": "If it hurts, do it more often",
-      "id": "47145",
-      "votes": 0
-    },
-  ]
+  if (anecdoteFetchResult.isLoading) {
+    return (
+      <div> loading data... </div>
+    );
+  }
+  if (anecdoteFetchResult.isError) {
+    return (
+      <div> Anecdote service not available due to problems in server </div>
+    );
+  }
+  const anecdotes = anecdoteFetchResult.data;
+
+  const handleVote = (anecdote) => {
+    console.log('vote');
+  };
 
   return (
     <div>
       <h3>Anecdote app</h3>
-    
+
       <Notification />
       <AnecdoteForm />
-    
+
       {anecdotes.map(anecdote =>
         <div key={anecdote.id}>
           <div>
@@ -34,7 +42,7 @@ const App = () => {
         </div>
       )}
     </div>
-  )
-}
+  );
+};
 
-export default App
+export default App;
