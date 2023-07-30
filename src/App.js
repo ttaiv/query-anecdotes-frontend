@@ -1,3 +1,4 @@
+import { useNotificationDispatch } from './NotificationContext';
 import AnecdoteForm from './components/AnecdoteForm';
 import Notification from './components/Notification';
 import { getAnecdotes, updateAnecdote } from './requests';
@@ -10,6 +11,8 @@ const App = () => {
   const updateAnecdoteMutation = useMutation(updateAnecdote, {
     onSuccess: () => queryClient.invalidateQueries('anecdotes')
   });
+
+  const dispatch = useNotificationDispatch();
 
   if (anecdoteFetchResult.isLoading) {
     return (
@@ -26,6 +29,7 @@ const App = () => {
   const handleVote = (anecdote) => {
     const updatedAnecdote = { ...anecdote, votes: anecdote.votes + 1 };
     updateAnecdoteMutation.mutate(updatedAnecdote);
+    dispatch({ type: 'VOTE', payload: anecdote.content });
   };
 
   return (
